@@ -16,3 +16,9 @@ def get_earning_data(date):
                                            ,"time"  : tr.contents[3].text if len(tr.contents) == 6 else tr.contents[2].text
                                        })
     return quotes
+
+def main():
+    get_earning_data("20161122")
+
+if __name__ == '__main__':
+    main()
