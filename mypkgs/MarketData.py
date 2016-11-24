@@ -1,6 +1,7 @@
 import requests
 import bs4
-
+import datetime
+from yahoo_finance import Share
 
 def get_earning_data(date):
     html = requests.get("https://biz.yahoo.com/research/earncal/{}.html".format(date), headers={
@@ -16,6 +17,19 @@ def get_earning_data(date):
                                        })
     return quotes
 
+def get_90days_open_close_stdv(date,symbol):
+    end_date = datetime.datetime.strptime(date,'%Y-%m-%d').date()
+    start_date = end_date - datetime.timedelta(days=90)
+    yahoo = Share(symbol)
+    histo_quotes = yahoo.get_historical(str(start_date),date)
+    size = len(histo_quotes)
+    for histo_quote in histo_quotes:
+        histo_quote[""]
+
+    return ""
+
+def get_close(date,symbol):
+    return ""
 
 def main():
     quotes = get_earning_data("20161122")
