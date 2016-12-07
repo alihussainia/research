@@ -1,6 +1,7 @@
 import requests
 import bs4
 import datetime
+import json
 from yahoo_finance import Share
 
 
@@ -31,13 +32,27 @@ def get_90days_open_close_stdv(date, symbol):
     return ""
 
 
-def get_close(date, symbol):
-    return ""
+def getInterestingQuotes(asofdate, previousDt):
+    previousQuotes = get_earning_data(previousDt)
+    quotes = get_earning_data(asofdate)
+    interestingQuotes = []
+    for previousQuote in previousQuotes:
+        symbol = previousQuote['symbol']
+        time = previousQuote['time']
+        if time == "After Market Close":
+            interestingQuotes.append(previousQuote)
+    for quote in quotes:
+        symbol = quote['symbol']
+        time = quote['time']
+        if time == "Before Market Open":
+            interestingQuotes.append(quote)
+    return interestingQuotes
+
 
 
 def main():
-    quotes = get_earning_data("20161122")
-    print(quotes)
+    interestingQts = getInterestingQuotes("20161206", "20161205")
+    print(interestingQts)
 
 if __name__ == '__main__':
     main()
