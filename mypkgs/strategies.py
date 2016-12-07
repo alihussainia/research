@@ -41,15 +41,20 @@ def get_pead_quotes(date):
 
         if(abs(todaysmoving)>std_dv90days):
             if(todaysmoving>0):
-                print(interestingQuote['symbol']+' Long '+str(todaysmoving)+' '+str(std_dv90days))
+                pead_results.append({'symbol':interestingQuote['symbol'],'action':'Long'})
+                #print(interestingQuote['symbol']+' Long '+str(todaysmoving)+' '+str(std_dv90days))
             else:
-                print(interestingQuote['symbol']+' Short '+str(todaysmoving)+' '+str(std_dv90days))
+                pead_results.append({'symbol':interestingQuote['symbol'],'action':'Short'})
+                #print(interestingQuote['symbol']+' Short '+str(todaysmoving)+' '+str(std_dv90days))
+        
+    return pead_results
 
 
 
 def main():
-    date = datetime.date(2016,11,30)
-    get_pead_quotes(date)
+    date = datetime.date(2016,12,6)
+    pead_results = get_pead_quotes(date)
+    print(pead_results)
 
 if __name__ == '__main__':
     main()
