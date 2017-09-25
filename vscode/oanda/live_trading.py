@@ -11,7 +11,7 @@ class ForexSystem:
         self.client = API(access_token=kwargs["access_token"])
         self.instrument = None
         self.qty = 0
-        self.interval = '10s'
+        self.interval = None
         self.mean_period_short = 5
         self.mean_period_long = 20
         self.buy_threshold = 1.0
@@ -47,20 +47,20 @@ class ForexSystem:
         r=pricing.PricingStream(self.account_id,params)
         rv=self.client.request(r)
         for tick in rv:
-            self.on_success(tick)
+            if(tick['type']!='HEARTBEAT'):
+                print(tick)
+                self.on_success(tick)
     
     def on_success(self,tick):
         time,instrument,bid,ask = self.parse_data(tick)
         self.tick_event(time,instrument,float(bid),float(ask))
 
     def tick_event(self,time,instrument,bid,ask):
+        time = pd.to_datetime(time)
         midprice = (ask+bid)/2.
         self.prices.loc[time, instrument] = midprice
-
-        resampled_prices = self.prices.resample(
-            pd.to_datetime(self.interval, unit='s'),
-            how='last',
-            fill_method="ffill")
+        print(self.prices)
+        resampled_prices = self.prices.resample(self.interval).last()
 
         mean_short = resampled_prices.tail(
             self.mean_period_short).mean()[0]
@@ -81,7 +81,7 @@ class ForexSystem:
                     or self.position > 0:
                 self.check_and_send_order(False)
 
-    def check_and_send_order(is_true):
+    def check_and_send_order(self,is_true):
         order = {
             "order": {
                 "instrument": self.instrument,
@@ -103,7 +103,7 @@ def main():
     system.begin(account_id=account_id,
              instruments="EUR_USD",
              qty=1000,
-             interval="10",
+             interval= '10s',
              mean_period_short=5,
              mean_period_long=20,
              buy_threshold=1.0,
